@@ -1,0 +1,15 @@
+Package: BBOTools
+Type: Package
+Title: Tools for Working with CME Group's Historical BBO Data sets
+Version: 0.1
+Date: 2016-02-02
+Authors@R: person("Mindy", "Mallory", email = "mallorym@illinois.edu",
+  role = c("aut", "cre"))
+Description: The BBO historical data sets from the CME Group contain every revision to quotes on the top of the book,
+  as well as transactions in the covered contracts. The format of the raw data is not particularly useful so this
+  package contains (will contain) several tools that assist in basic manipulation of and computation on the this type of data.
+License: MIT + file LICENSE
+LazyData: TRUE
+Imports:
+  data.table,
+  readr
