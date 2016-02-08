@@ -27,8 +27,8 @@ bboread <- function(x) {
   start <- c(1, 9, 15, 28, 32, 45, 53, 65)
   end   <- c(8, 14, 22, 31, 36, 51, 53, 70)
   columnnames <- c("TradeDate", "TradeTime", "TradeSeqNum", "DeliveryDate", "TrQuantity", "TrPrice", "ASKBID", "EntryDate")
-
-  data <- read_fwf(x, fwf_positions(start, end, col_names = columnnames))
+  coltypes  <- c("c", "c", "i", "c", "i", "c", "c", "c")
+  data <- read_fwf(x, fwf_positions(start, end, col_names = columnnames), col_types = coltypes)
   return(data)
 }
 
