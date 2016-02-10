@@ -11,3 +11,5 @@
 # as.IDate("20131129", format = "%Y%m%d")
 #
 # table <- corn_large[, .N, by=.(TradeDate,ASKBID)]
+
+#bboread('C:/Users/mallorym/BBOCORNDATA/2008Jan-2010Jan_txt/XCBT_C_FUT_091006')

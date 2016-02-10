@@ -7,7 +7,7 @@
 bboread(x)
 }
 \arguments{
-\item{x}{is a .txt file from the CME Group's historical datamine.}
+\item{x}{is a path to a .txt file from the CME Group's historical datamine.}
 }
 \value{
 A datatable.
@@ -20,6 +20,10 @@ For performance, only the bare minimum columns are read in.
 }
 \examples{
 DATA <- bboread('data-raw/XCBT_C_FUT_110110.TXT')
+head(DATA)
+
+
+#' DATA <- bboread('C:/Users/mallorym/BBOCORNDATA/2012Jan-2013Nov_txt/BBO_CBT_20120102-20131130_9552_00.txt')  # A 'large' file.
 head(DATA)
 }
 
