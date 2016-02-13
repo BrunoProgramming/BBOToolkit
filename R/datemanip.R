@@ -22,7 +22,8 @@
 
 
 datemanip <- function(x) {
-    x <- as.IDate(paste0(substr(x[, 1, with=FALSE], 1, 4), "-", substr(x[, 1, with=FALSE], 5, 6), "-", substr(x[,1, with=FALSE], 7, 8)))
+
+    x[, 1, with=FALSE] <- as.IDate(paste0(substr(x[, 1, with=FALSE], 1, 4), "-", substr(x[, 1, with=FALSE], 5, 6), "-", substr(x[,1, with=FALSE], 7, 8)))
     return(x)
 }
 
