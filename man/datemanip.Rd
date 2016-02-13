@@ -2,29 +2,30 @@
 % Please edit documentation in R/datemanip.R
 \name{datemanip}
 \alias{datemanip}
-\title{Manipulate Date Strings in to Unambiguous Format}
+\title{Manipulate Date Strings IDate Format}
 \usage{
 datemanip(x)
 }
 \arguments{
-\item{x}{a one row, two column data.table containing a date in the format, "20080114", to represent January 14, 2008, and a time in
-the format, "09:30:00", to represent hours, minutes, and seconds.}
+\item{x}{a one column of a data.table containing a date in the format, "20080114", to represent January 14, 2008.}
 }
 \value{
-An POSIXlt date object.
+An IDate object.
 }
 \description{
 This function takes dates that are formatted as a character string of the type, '20080114', where this is
-January 14, 2008, and a time in the format, "09:30:00", to represent hours, minutes, and seconds. The value of the
-function returns a POSIXlt object. After using reformatting the dates, the function passes the unambiguous string to
-an as.POSIXlt() call that specifies "America/Chicago" as the time zone. This is important if using the function on a machine that is not in the Central Time
-Zone because the default is set to system time.
+January 14, 2008 The value of the function returns an IDate object.
 }
 \details{
 This function is intended to be vectorized over a data.table object.
 }
 \examples{
-datasample <- bboread('data-raw/XCBT_C_FUT_110110.TXT')
-datemanip(datasample)
+datasample <- as.data.table(bboread('data-raw/XCBT_C_FUT_110110.TXT'))
+datasample[, TradeDate := datemanip(datasample[, 1, with=FALSE])]
+datasample
+
+datasample <- as.data.table(bboread('data-raw/XCBT_C_FUT_110110.TXT'))
+datasample[, c("TradeDate", "TradeTime") := .(datemanip(datasample[, 1, with=FALSE]), timemanip(datasample[, 2, with=FALSE]))]
+datasample
 }
 

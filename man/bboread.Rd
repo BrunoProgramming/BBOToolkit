@@ -15,15 +15,16 @@ A datatable.
 \description{
 This function is simply a wrapper for the read_fwf function in the readr package. Inside the function, start and end positions
 of the raw fixed width file are specified as documented at
-http://www.cmegroup.com/confluence/display/EPICSANDBOX/Best+Bid+Best+Offer+ASCII+Layout
+\url{http://www.cmegroup.com/confluence/display/EPICSANDBOX/Best+Bid+Best+Offer+ASCII+Layout}
+}
+\details{
 For performance, only the bare minimum columns are read in.
 }
 \examples{
 DATA <- bboread('data-raw/XCBT_C_FUT_110110.TXT')
 head(DATA)
 
-
-#' DATA <- bboread('C:/Users/mallorym/BBOCORNDATA/2012Jan-2013Nov_txt/BBO_CBT_20120102-20131130_9552_00.txt')  # A 'large' file.
+DATA <- bboread('C:/Users/mallorym/BBOCORNDATA/2012Jan-2013Nov_txt/BBO_CBT_20120102-20131130_9552_00.txt')  # A 'large' file.
 head(DATA)
 }
 
