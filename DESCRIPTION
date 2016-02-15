@@ -13,3 +13,6 @@ LazyData: TRUE
 Imports:
   data.table,
   readr
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
