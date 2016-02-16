@@ -9,13 +9,55 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+## Table of Contents: 
+[Set Up Your First Project][]  
+[Your First R Script][]  
+[The BBOTools Package][]  
+[BBOTools as a Private GitHub Repository][]  
+[Installing BBOTools from GitHub][]  
+[Importing BBO Data with bboread()][]  
+
+
+
+This vignette is written with graduate students in mind. The intent is to get graduate students and other collaborators who may not be familiar with data analysis with R and RStudio up and running doing basic analysis of the BBO datasets in as little time as possible. This vinette covers the basics of how R and RStudio works. Before continuing, it is expected the reader will have completed an extensive introductory R tutorial. There are several available.  
+
+1. [http://www.r-tutor.com/r-introduction](http://www.r-tutor.com/r-introduction)
+
+2. [https://www.datacamp.com/courses/free-introduction-to-r](https://www.datacamp.com/courses/free-introduction-to-r)
+
+3. [http://www.cyclismo.org/tutorial/R/](http://www.cyclismo.org/tutorial/R/)
+
+4. [http://tryr.codeschool.com/](http://tryr.codeschool.com/)
+
+There are other others, but this is a start. For one's own research it is required that you will go much deeper than what is covered in these introductory tutorials, but hopefully you will come out of the tutorials with an ability to Google what you want to do and how to implement it in R. The rest of this vinette will assume the reader has at least installed the latest version of R and RStudio. IF you are familar with R and RStudio, skip ahead to [The BBOTools Package][]. 
+
+## Set Up Your First Project
+
+In Rstudio, click "New Project" from the File menu. You will see a menu like the following:
+
+![New Project](images/newproj.png)
+
+Choose "New Directory", and then "Empty Project". You will be asked to navigate to the place where you want your project folder to reside. This creates a file in the directory you chose named `YourProject.Rproj`. Assuming you named your project 'YourProject'. This should be the first step on any analysis in R. Working within the framework of an R Project tells RStudio where to put things by default. Without it, the default working directory will inevitably end up beign something unintuitive or unexpected, and you will have to tell your R code hard file paths everytime you want to refer to a data file or code script. This makes working accross machines or with collaborators difficult because you have to change the file path everytime you are on a different machine. 
+
+## Your First R Script
+
+Open a new R script file by clicking the green '+' icon below the File menu in RStudio. 
+
+![New Script](images/newscript.png)
+
+Follow along by copy and pasting the commands from this vinette into your R script and executing the commands. To execute a command, place the cursor on the line you want to execute and click "Run". In the figure below, executing line 2 will assign a value of '1' to 'x'. 
+
+![Execute command](images/execute.png)
+
+## The BBOTools Package 
+
 This package provides tools for working with the Top-of-the-Book (Best Bid-Offer) datasets from the CME Group's [Historical Datamine](http://www.cmegroup.com/market-data/datamine-historical-data.html#topOfBookBbo). These data provide record of every revision to the best bid or best offer. These revisions may have resulted from a new limit order arriving to the market, a limit order being cancelled, or a transaction matching a market order with a limit order or a limit order with another limit order. 
 
 The raw data provided by the CME Group are organized as large fixed-width files. The files are large enough that if one is not careful about memory use, even simple analyses becomes a problem. An extention of R's base data.frame called [data.table](https://github.com/Rdatatable/data.table/wiki) was recently developed by [Matt Dowle](https://github.com/mattdowle) and [Arun Srinivasan](https://github.com/arunsrinivasan) makes working with large datasets in R much more feasible. 
 
-This package utilizes the data.table package extensively. Most of the functions in the BBOTools package are simple wrapper functions the make working with the BBO data more convenient. 
+This package utilizes the data.table package extensively. Most of the functions in the BBOTools package are simple wrapper functions that make working with the BBO data more convenient. 
 
-# BBOTools as a Private GitHub Repository
+## BBOTools as a Private GitHub Repository
 
 Currently, BBOTools is hosted in a private repository in the [ProfMalloryResearch](https://github.com/ProfMalloryResearch) GitHub repsository. To use this package you will need to have a GitHub account and be added to the [ProfMalloryResearch](https://github.com/ProfMalloryResearch) organization. If we plan to collaborate, contact Mindy Mallory to be added.  
 
@@ -28,13 +70,13 @@ Steps to get a PAT
 3. Click 'Generate New Token'
 4. You will have a long string of numbers that is your token. 
 
-You want to save it in a place that will not be accessible to the public in anyway. For example, you don't want it to get uploaded to a public (or even private) repository. 
+You want to save it in a place that will not be accessible to the public in anyway. For example, you don't want it to get uploaded to a public (or even private) repository on GitHub.com. 
 
 Steps to save your PAT in a safe place. 
 
 1. Find out what R's 'home' directory is on your machine. 
-    + execute `normalizePath("~/")` in the console. The file identified is where you should save a plain text file called .Renvirion
-2. Open .Renviron
+    + execute `normalizePath("~/")` in the R console. The file identified is where you should save a plain text file called .Renvirion
+2. Navigate to and open the .Renviron in a plain text editor. 
 3. Type the following: GITHUB_PAT = "StringofnumbersthatisyourPAT"
 4. Save .Renviron
 
@@ -42,63 +84,53 @@ Your PAT should be stored in a safe place and accessible from the R console. To 
 `Sys.getenv("GITHUB_PAT")`
 You should see your own PAT in the output. 
 
+## Installing BBOTools from GitHub
+
 Now to install the package `BBOToolkit` from [ProfMalloryResearch](https://github.com/ProfMalloryResearch) execute the following r code:
 
-`install_github("ProfMalloryResearch/BBOToolkit", auth_token = Sys.getenv("GITHUB_PAT")) `
-
-This loadeds the BBOTools package into your R environment. 
-
-# Installing BBOTools from GitHub
-
-
-# Importing BBO Data with bboread()
-
-
-
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
-
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
-
-## Vignette Info
-
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
-
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+```
+install_github("ProfMalloryResearch/BBOToolkit", auth_token = Sys.getenv("GITHUB_PAT")) 
+library(BBOTools)
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+This installs and loads the BBOTools package into your R environment. 
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+## Importing BBO Data with bboread()
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+The CME Group offers a sample of the BBO data. Go to [Historical Datamine](http://www.cmegroup.com/market-data/datamine-historical-data.html#topOfBookBbo) and download the corn futures bbo data sample. Extract the compressed file to your R project folder so that the file `XCBT_C_FUT_110110.TXT` resides in your project folder.
 
-## More Examples
+Next, make sure you have installed and loaded the `data.table` and `readr` packages. 
 
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+```
+install.packages("data.table")
+install.packages("readr")
+library(data.table)
+library(readr)
 
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
 ```
 
-Also a quote using `>`:
+Next, lets load the sample BBO data and take a look at it. 
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+```
+DATA <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))
+DATA
+
+```
+This loads the sample BBO data into your R environment as a data.table object. The use of the `as.data.table()` function here is important because without it the data get loaded as a data.fram object. 
+
+```
+DATA <- bboread('XCBT_C_FUT_110110.TXT')
+DATA
+
+```
+Notice the difference in the way the object, `DATA`, displays as a data.table in the first case and a data.frame in the second case. The data.table package was written with careful memory management in mind. Since we are working with large files, memory management is essential. Read the excellent series of vinettes for the [data.table package](https://cran.r-project.org/web/packages/data.table/index.html) for details about how data.table makes efficient use of memory verses data.frames. 
+
+To clean up our memory after that example, remove the `DATA` variable and load it again as a data.table.
+
+```
+rm(DATA)
+DATA <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))
+DATA
+
+```
+
