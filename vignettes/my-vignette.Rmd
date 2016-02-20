@@ -133,4 +133,14 @@ DATA <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))
 DATA
 
 ```
+Click on the `DATA` variable in the 'Environment' tab in RStudio. This displays the data.table object in a spreadsheet-like display. The `bboread()` function only imported the data columns we need for analyzing this data. The raw data contains many additional columns that are unnecesary for our purposes. If you want to see the full dataset, look at the documentation for using the `read_fwf()` function of the [readr](https://cran.r-project.org/web/packages/readr/index.html) package. 
+
+We have imported the following data columns:
+
+```
+names(DATA)
+
+#[1] "TradeDate"    "TradeTime"    "TradeSeqNum"  "DeliveryDate" "TrQuantity"   "TrPrice"      "ASKBID"       "EntryDate"   
+```
+*Describe the data columns*
 

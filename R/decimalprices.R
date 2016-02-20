@@ -6,11 +6,15 @@
 #' this function will only work for corn prices < $100/bushel. At this date, grain prices
 #' above $100/ bushel are unimaginable.
 #'
+#' This function is intended to be vectorized over a data.table object as in the example below.
+#'
 #' @return The column of the orginal datatable with the TrPrice column converted to numeric in decimal format.
 #' @examples
-#' corn_110110 <- as.data.table(bboread('data-raw/XCBT_C_FUT_110110.TXT'))
-#'
-#' corn_110110[, Price := decimalprices(corn_110110[, 6, with=FALSE])]
+#' accum <- as.list(Null)
+#' accum[[1]] <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))
+#' accum[[2]] <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))                 # accum is a list of two 'days' worth of BBO data
+#' corn_110110 <- data.table::rbindlist(accum)
+#' corn_110110[, Price := decimalprices(corn_110110$TrPrice)]
 #'
 
 decimalprices <- function(x) {

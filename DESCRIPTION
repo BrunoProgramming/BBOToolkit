@@ -12,7 +12,8 @@ License: MIT + file LICENSE
 LazyData: TRUE
 Imports:
   data.table,
-  readr
+  readr,
+  tidyr
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
