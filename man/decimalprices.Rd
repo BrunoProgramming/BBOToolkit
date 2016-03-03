@@ -22,7 +22,7 @@ The column of the orginal datatable with the TrPrice column converted to numeric
 Convert eighth of a cent grain prices to decimal
 }
 \examples{
-accum <- as.list(Null)
+accum <- as.list(NULL)
 accum[[1]] <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))
 accum[[2]] <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))                 # accum is a list of two 'days' worth of BBO data
 corn_110110 <- data.table::rbindlist(accum)

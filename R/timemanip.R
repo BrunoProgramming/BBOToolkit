@@ -13,17 +13,17 @@
 #' @examples
 #'
 #' datasample <- as.data.table(bboread('data-raw/XCBT_C_FUT_110110.TXT'))
-#' datasample[, TradeTime .= timemanip(datasample[, 2, with=FALSE])]
+#' datasample[, TradeTime .= timemanip(TradeTime)]
 #' datasample
 #'
 #' datasample <- as.data.table(bboread('data-raw/XCBT_C_FUT_110110.TXT'))
-#' datasample[, c("TradeDate", "TradeTime") := .(datemanip(datasample[, 1, with=FALSE]), timemanip(datasample[, 2, with=FALSE]))]
+#' datasample[, c("TradeDate", "TradeTime") := .(datemanip(TradeDate), timemanip(TradeTime))]
 #' datasample
 
 
 
 
 timemanip <- function(x) {
-  x <- as.ITime(paste0(substr(x[, 1, with=FALSE], 1, 2), ":", substr(x[, 1, with=FALSE], 3, 4), ":", substr(x[,1, with=FALSE], 5, 6)))
+  x <- as.ITime(paste0(substr(x, 1, 2), ":", substr(x, 3, 4), ":", substr(x, 5, 6)))
   return(x)
 }

@@ -9,17 +9,22 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Table of Contents: 
+## Table of Contents 
 [Set Up Your First Project][]  
 [Your First R Script][]  
 [The BBOTools Package][]  
 [BBOTools as a Private GitHub Repository][]  
 [Installing BBOTools from GitHub][]  
 [Importing BBO Data with bboread()][]  
+[Data Description][]  
+[Showcasing the Custom BBOTools Functions][]  
+[Build Top-of-the-Book and Bid-Ask Spread][]  
 
 
 
-This vignette is written with graduate students in mind. The intent is to get graduate students and other collaborators who may not be familiar with data analysis with R and RStudio up and running doing basic analysis of the BBO datasets in as little time as possible. This vinette covers the basics of how R and RStudio works. Before continuing, it is expected the reader will have completed an extensive introductory R tutorial. There are several available.  
+## Introduction 
+
+This vignette is written with graduate students in mind. The intent is to get graduate students and other collaborators who may not be familiar with data analysis with R and RStudio up and running doing basic analysis of the BBO datasets in as little time as possible. This vinette covers the basics of how to use R, RStudio, and the `BBOTools` package to analyse the CME's BBO datasets. First download and install R from [https://www.r-project.org/](https://www.r-project.org/), then download and install RStudio from [https://www.rstudio.com/](https://www.rstudio.com/). Before continuing, it is expected the reader will have completed an extensive introductory R tutorial. There are several available.  
 
 1. [http://www.r-tutor.com/r-introduction](http://www.r-tutor.com/r-introduction)
 
@@ -31,13 +36,17 @@ This vignette is written with graduate students in mind. The intent is to get gr
 
 There are other others, but this is a start. For one's own research it is required that you will go much deeper than what is covered in these introductory tutorials, but hopefully you will come out of the tutorials with an ability to Google what you want to do and how to implement it in R. The rest of this vinette will assume the reader has at least installed the latest version of R and RStudio. IF you are familar with R and RStudio, skip ahead to [The BBOTools Package][]. 
 
+[Table of Contents][]
+
 ## Set Up Your First Project
 
 In Rstudio, click "New Project" from the File menu. You will see a menu like the following:
 
 ![New Project](images/newproj.png)
 
-Choose "New Directory", and then "Empty Project". You will be asked to navigate to the place where you want your project folder to reside. This creates a file in the directory you chose named `YourProject.Rproj`. Assuming you named your project 'YourProject'. This should be the first step on any analysis in R. Working within the framework of an R Project tells RStudio where to put things by default. Without it, the default working directory will inevitably end up beign something unintuitive or unexpected, and you will have to tell your R code hard file paths everytime you want to refer to a data file or code script. This makes working accross machines or with collaborators difficult because you have to change the file path everytime you are on a different machine. 
+Choose "New Directory", and then "Empty Project". You will be asked to navigate to the place where you want your project folder to reside. This creates a file in the directory you chose named `YourProject.Rproj`. Assuming you named your project 'YourProject'. This should be the first step on any analysis in R. Working within the framework of an R Project tells RStudio where to put things by default. Without it, the default working directory will inevitably end up being something unintuitive or unexpected, and you will have to tell your R code hard file paths everytime you want to refer to a data file or code script. This makes working accross machines or with collaborators difficult because you have to change the file path everytime you are on a different machine. 
+
+[Table of Contents][]
 
 ## Your First R Script
 
@@ -49,6 +58,8 @@ Follow along by copy and pasting the commands from this vinette into your R scri
 
 ![Execute command](images/execute.png)
 
+[Table of Contents][]
+
 ## The BBOTools Package 
 
 This package provides tools for working with the Top-of-the-Book (Best Bid-Offer) datasets from the CME Group's [Historical Datamine](http://www.cmegroup.com/market-data/datamine-historical-data.html#topOfBookBbo). These data provide record of every revision to the best bid or best offer. These revisions may have resulted from a new limit order arriving to the market, a limit order being cancelled, or a transaction matching a market order with a limit order or a limit order with another limit order. 
@@ -56,6 +67,8 @@ This package provides tools for working with the Top-of-the-Book (Best Bid-Offer
 The raw data provided by the CME Group are organized as large fixed-width files. The files are large enough that if one is not careful about memory use, even simple analyses becomes a problem. An extention of R's base data.frame called [data.table](https://github.com/Rdatatable/data.table/wiki) was recently developed by [Matt Dowle](https://github.com/mattdowle) and [Arun Srinivasan](https://github.com/arunsrinivasan) makes working with large datasets in R much more feasible. 
 
 This package utilizes the data.table package extensively. Most of the functions in the BBOTools package are simple wrapper functions that make working with the BBO data more convenient. 
+
+[Table of Contents][]
 
 ## BBOTools as a Private GitHub Repository
 
@@ -70,7 +83,7 @@ Steps to get a PAT
 3. Click 'Generate New Token'
 4. You will have a long string of numbers that is your token. 
 
-You want to save it in a place that will not be accessible to the public in anyway. For example, you don't want it to get uploaded to a public (or even private) repository on GitHub.com. 
+You want to save it in a place that will not be accessible to the public in any way. For example, you don't want it to get uploaded to a public (or even private) repository on GitHub.com. 
 
 Steps to save your PAT in a safe place. 
 
@@ -84,6 +97,8 @@ Your PAT should be stored in a safe place and accessible from the R console. To 
 `Sys.getenv("GITHUB_PAT")`
 You should see your own PAT in the output. 
 
+[Table of Contents][]
+
 ## Installing BBOTools from GitHub
 
 Now to install the package `BBOToolkit` from [ProfMalloryResearch](https://github.com/ProfMalloryResearch) execute the following r code:
@@ -95,28 +110,31 @@ library(BBOTools)
 
 This installs and loads the BBOTools package into your R environment. 
 
+[Table of Contents][]
+
 ## Importing BBO Data with bboread()
 
 The CME Group offers a sample of the BBO data. Go to [Historical Datamine](http://www.cmegroup.com/market-data/datamine-historical-data.html#topOfBookBbo) and download the corn futures bbo data sample. Extract the compressed file to your R project folder so that the file `XCBT_C_FUT_110110.TXT` resides in your project folder.
 
 Next, make sure you have installed and loaded the `data.table` and `readr` packages. 
 
-```
-install.packages("data.table")
-install.packages("readr")
+```{r , warning = FALSE, message = FALSE}
+#install.packages("data.table")
+#install.packages("readr")
 library(data.table)
 library(readr)
+library(BBOTools)
 
 ```
 
 Next, lets load the sample BBO data and take a look at it. 
 
-```
+```{r}
 DATA <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))
 DATA
 
 ```
-This loads the sample BBO data into your R environment as a data.table object. The use of the `as.data.table()` function here is important because without it the data get loaded as a data.fram object. 
+This loads the sample BBO data into your R environment as a `data.table` object. The use of the `as.data.table()` function here is important because without it the data get loaded as a `data.frame` object. 
 
 ```
 DATA <- bboread('XCBT_C_FUT_110110.TXT')
@@ -137,10 +155,116 @@ Click on the `DATA` variable in the 'Environment' tab in RStudio. This displays 
 
 We have imported the following data columns:
 
-```
+```{r}
 names(DATA)
 
-#[1] "TradeDate"    "TradeTime"    "TradeSeqNum"  "DeliveryDate" "TrQuantity"   "TrPrice"      "ASKBID"       "EntryDate"   
 ```
-*Describe the data columns*
+
+[Table of Contents][]
+
+## Data Description
+
+**TradeDate and EntryDate**
+
+`EntryDate` refers to the date on which the trade was placed, while `TradeDate` refers to the settlement date associated with those trades. These are character strings representing dates in the format `%YYYY%mm%dd`. `TradeDate` and `EntryDate` are only different for trades that take place in the overnight session before midnight. For example, if you look at the first few lines of `DATA` you can tell that these are the first trades and quotes from the beginning of the overnight trading session. These trades take place on calendar date 2011-01-09, but are recorded as trades on contract settlement day 2011-01-10 since daily settlement happens at the end of the daytime session (1:15pm CST). 
+
+**TradeTime**
+
+`TradeTime` is a character string that contains the time the trade or quote took place - to the second. It is in format `%H:%m:%s`. For example, the first line reads `130604`, that is 1:06:04pm CST.
+
+**TradeSeqNum**
+
+`TradeSeqNum` is simply a running index of the trades and quotes as they occur in sequence. For some reason, this variable always increments by 10. Prior to 2012, CME had the practice of copying both the bid and ask when one changes. For example, if someone cancels a limit order to sell, the ask line will change. The quantity offered goes down by the order size that was canceled and the ask price may go up if it was the only limit order to sell at the top of the book. So in the BBO dataset a new ask must be recorded for the top of the book and the `TradeSeqNum` is incremented by 10. In addition, the best bid information is simply copied with the new `TradeSeqNum`. This makes building the top-of-the-book easy for data prior to 2012. An example of building the top-of-the-book will follow shortly.
+
+**DeliveryDate** 
+
+This variable identifies which maturity futures contract the row is recorded for. Format is `%Y%m` so that `1103` stands for the March 2011 delivery contract. 
+
+**TrQuantity**
+
+This variable contains the size of the bid, ask, or transaction.
+
+**TrPrice**
+
+This variable contains the price of the bid, ask, or transaction. This variable is a character string with leading zeros before displaying the price in cents per bushel. A quirk of these markets is that prices are quoted to the eighth of a cent and the last character of this price variable represents the fraction of an eighth of a cent. For example a price of `0005956` represents `595 + 6/8 = 595.75` cents per bushel. This package contains a function called `decimalprices()` that converts this variable to a decimal for you. An example will follow in this vinette. 
+
+**ASKBID**
+
+This column identifies if the row represents an ask ('A'), bid ('B'), or transaction ('NA').
+
+[Table of Contents][]
+
+## Showcasing the Custom BBOTools Functions
+
+This section provides detailed examples of how to execute tasks common to the analysis of the BBO data. 
+
+### `decimalprices()`: Converting 1/8th of a cent 'Ticks' to Decimal 
+
+For the grains and oilseeds futures contracts prices are quoted in 1/4 of a cent increments and the last character of the `TrPrice` variable is the numerator in of the fraction expressed as 1/8th of a cent. For example, the only numbers that apper as last character in the `TrPrice` column are 0, 2, 4, and 6 representing 0/8 = 0.00, 2/8 = 0.25, 4/8 = 0.5, and 6/8 = 0.75. 
+
+The function `decimalprices()` takes the column `TrPrice` and converts the character string to a floating decimal price and automatically handles the fraction of a cent issue from the first column. 
+
+In the example below, we load the sample BBO data into a list called `accum` twice, similar to how we might bind multiple days of data together. From a memory use perspective it is good to get used to storing intermediate data in lists and then binding them together in the end. For more discussion of memory use problems in R see the excellent post at [win-vector](http://www.win-vector.com/blog/2015/07/efficient-accumulation-in-r/). Then, the function `rbindlist()` from the `data.table` package binds the two elements of the list, `accum`, into one data.table called `corn_110110`. The next line, `corn_110110[, Price := decimalprices(corn_110110$TrPrice)]` exploits the `data.table` functionality of calling a function `decimalprices()` on a column of the data.table and creating a new column called `Price`. More efficient from a memory perspective would be to simply replace the `TrPrice` columns with decimal prices returned by `decimalprices()`. Then the line would be `corn_110110[, TrPrice := decimalprices(corn_110110$TrPrice)]` instead. 
+
+```{r}
+accum <- as.list(NULL)
+accum[[1]] <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))
+accum[[2]] <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))                 # accum is a list of two 'days' worth of BBO data
+corn_110110 <- data.table::rbindlist(accum)
+corn_110110[, Price := decimalprices(corn_110110$TrPrice)]
+corn_110110
+
+```
+
+
+
+### `RollContracts()`: Rolling Contracts to Create a Nearby Series
+
+A common task is to string together a series of 'nearby' or 'first deferred' contracts. In this package the function `RollContracts(accum, r)` takes a `data.table` object or a list of `data.table` objects for different dates and identifies which contracts are the nearby, first deferred, and second deferred. More distan contracts than these are removed. The value `r` can be set to specify the date of the month prior to expiration on which the roll should occur. The 20th is the default. A new column called `Deferreds` is created, allowing the nearby contract across multiple days to be strung together to form a nearby series. 
+
+```{r}
+accum <- as.list(NULL)
+accum[[1]] <- corn_110110
+accum[[2]] <- corn_110110                 # accum is a list of two 'days' worth of BBO data
+accum <- RollContracts(accum, r = 20)
+accum
+
+```
+
+[Table of Contents][]
+
+
+### `minutebins()`: Break Trading Day into Ten Minute Bins
+
+Sometimes you want to isolate market effects at specific times of the day. Often, the market open and market close are of particular interest. The function `minutebins(x , minutes)` takes a `data.table` object and the size of the minute bins, `minutes = 10` is the default. It takes the timestamp and rounds to the nearest minute interval allowing you to easily focus on market activity that happens exclusively in specific time minute intervals. For example, suppose you want to analyze the bid-ask spread on the market open. This function easily allows you to subset for a number of minutes directly after the market open. This is accomplished without much computing time because we manipulate the date and time character strings without converting to a date class. Converting to a date class alone takes a lot of time for R to accomplish, so if you can do subset by date or time without converting to a date class, you save a lot of time. 
+
+```{r}
+corn_110110[, bins := minutebins(corn_110110, 10)]
+corn_110110
+
+```
+
+### `datemanip()` and`timemanip()` for Converting to IDate Class Objects. 
+
+As mentioned in the discussion of the `minutebins()` function, converting the date and time variables is costly in terms of computing time; however it is often unavoidable at some point in our analysis. Particularly if you want to include any plots of time series analysis, you need the x-axis to be specified as a variable in one of the time classes. From a computing time perspective, this is best to be done after your analysis is performed and you want to plot some kind of aggregated results. For example, perhaps I want to plot the number of transactions per day. You can first compute the number of transactions per day before converting the date variable to a date object. Now you have something that has only one observation per day. This will be less time consuming to convert to a date object. 
+
+```{r}
+
+corn_110110[, c("TradeDate", "TradeTime") := .(datemanip(TradeDate), timemanip(TradeTime))]
+corn_110110
+
+```
+
+[Table of Contents][]
+
+## Build Top-of-the-Book and Bid-Ask Spread
+
+A frequent topic of analysis with the BBO data is to 
+
+```{r}
+DT <- dcast.data.table(corn_110110[ ASKBID != 'NA'  ], 
+                       TradeDate + TradeTime + TradeSeqNum + DeliveryDate + EntryDate ~ ASKBID, 
+                       value.var = c("TrQuantity", "TrPrice"))
+
+```
 

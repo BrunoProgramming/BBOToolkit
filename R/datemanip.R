@@ -13,7 +13,7 @@
 #' @examples
 #'
 #' datasample <- as.data.table(bboread('data-raw/XCBT_C_FUT_110110.TXT'))
-#' datasample[, TradeDate := datemanip(datasample[, 1, with=FALSE])]
+#' datasample[, TradeDate := datemanip(TradeDate)]
 #' datasample
 #'
 #' datasample <- as.data.table(bboread('data-raw/XCBT_C_FUT_110110.TXT'))
@@ -23,8 +23,14 @@
 
 datemanip <- function(x) {
 
-    x[, 1] <- as.IDate(paste0(substr(x[, 1, with=FALSE], 1, 4), "-", substr(x[, 1, with=FALSE], 5, 6), "-", substr(x[,1, with=FALSE], 7, 8)))
-    return(x)
+
+  x <- as.IDate(paste0(substr(x, 1, 4), "-", substr(x, 5, 6), "-", substr(x, 7, 8)))
+
+    #x[, 1] <- as.IDate(paste0(substr(x[, 1, with=FALSE], 1, 4), "-", substr(x[, 1, with=FALSE], 5, 6), "-", substr(x[,1, with=FALSE], 7, 8)))
+  #x <- as.IDate(paste0(substr(x, 1, 4), "-", substr(x, 5, 6), "-", substr(x, 7, 8)))
+
+  return(x)
 }
+
 
 

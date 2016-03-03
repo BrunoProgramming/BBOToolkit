@@ -35,14 +35,13 @@ RollContracts <- function(accum, r = 20) {
   accum <- lapply(accum, function(x) x[Month != "09",])                  # Removes September in the list
 
 
-
+  #(Month != substr(x$YearMonth, 5, 6) |                              # Deletes Contracts trading in the Delivery Month
   accum <- lapply(accum, function(x, Roll = r) {                         # Roll Contracts
-    x[(Month != substr(x$YearMonth, 5, 6) &                              # Deletes Contracts trading in the Delivery Month
-      (Month == paste0("0",                                              # Deletes Contracts trading in month prior after 20th day
-                as.character(as.numeric(substr(x$YearMonth,
-                5, 6))+1)) & as.numeric(Day) < r)) |
-      (as.numeric(Month) > as.numeric(substr(x$YearMonth, 5, 6))+1)]# Keeps all days in Months prior to expiration mess
-  })
+    x[(as.numeric(Month) == (as.numeric(substr(x$YearMonth, 5, 6))+1) & as.numeric(Day) < r) |
+      (as.numeric(Month) > as.numeric(substr(x$YearMonth, 5, 6))+1) |    # Keeps all days in Months prior to expiration mess
+      (as.numeric(Month) < as.numeric(substr(x$YearMonth, 5, 6)))]       # Need two lines for when crossing into new year.
+  })                                                                     # Using first line only of the last logical condition
+                                                                         # deletes nov and dec dates.
 
   accum <- lapply(accum, unite, TradeDate, one_of(c("YearMonth", "Day")), # Unite TradeDate
                   sep = "", remove = TRUE)

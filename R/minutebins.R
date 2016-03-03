@@ -13,16 +13,15 @@
 #'
 #' @examples
 #'
-#' datasample <- as.data.table(bboread('data-raw/XCBT_C_FUT_110110.TXT'))
-#' datasample[, c("TradeDate", "TradeTime") := .(datemanip(datasample[, 1, with=FALSE]), timemanip(datasample[, 2, with=FALSE]))]
-#' datasample
-#' datasample[, bins := minutebins(datasample[, 2, with=FALSE], 10)]
-#' datasample
+#' datasample <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))
+#' datasample[, bins := minutebins(datasample)]
 
 
 
 
-minutebins <- function(x, minutes) {
-  bins <- paste(as.character(hour(datasample$TradeTime)), ":", as.character(floor(minute(datasample$TradeTime)/minutes)*minutes))
+minutebins <- function(x, minutes= 10) {
+  x <- separate(x, TradeTime, into = c("Hour", "Minute", "Second"), sep = c(2, 4) )
+  #bins <- paste(Hour, ":", as.character(floor(as.numeric(Minute)/minutes)*minutes))
+  bins <- paste(x$Hour, ":", as.character(floor(as.numeric(x$Minute)/minutes)*minutes))
   return(bins)
 }
