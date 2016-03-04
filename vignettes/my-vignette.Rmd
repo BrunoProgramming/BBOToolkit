@@ -2,7 +2,11 @@
 title: "Introduction to BBOTools"
 author: "Mindy Mallory"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+    rmarkdown::html_document:
+        theme: spacelab
+        highlight: pygments
+        css: css/bootstrap.css
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
@@ -18,7 +22,7 @@ vignette: >
 [Importing BBO Data with bboread()][]  
 [Data Description][]  
 [Showcasing the Custom BBOTools Functions][]  
-[Build Top-of-the-Book and Bid-Ask Spread][]  
+[Useful Scripts][]  
 
 
 
@@ -34,7 +38,7 @@ This vignette is written with graduate students in mind. The intent is to get gr
 
 4. [http://tryr.codeschool.com/](http://tryr.codeschool.com/)
 
-There are other others, but this is a start. For one's own research it is required that you will go much deeper than what is covered in these introductory tutorials, but hopefully you will come out of the tutorials with an ability to Google what you want to do and how to implement it in R. The rest of this vinette will assume the reader has at least installed the latest version of R and RStudio. IF you are familar with R and RStudio, skip ahead to [The BBOTools Package][]. 
+There are other others, but this is a start. For one's own research it is required that you will go much deeper than what is covered in these introductory tutorials, but hopefully you will come out of the tutorials with an ability to Google what you want to do and how to implement it in R. This package makes heavy use of the `data.table` package. The `data.table` package was written with careful memory management in mind. Since we are working with large files, memory management is essential. Read the excellent series of vinettes for the [data.table package](https://cran.r-project.org/web/packages/data.table/index.html) for details about how `data.table` makes efficient use of memory verses data.frames. The rest of this vinette will assume the reader has at least installed the latest version of R and RStudio. IF you are familar with R and RStudio, skip ahead to [The BBOTools Package][]. 
 
 [Table of Contents][]
 
@@ -141,9 +145,7 @@ DATA <- bboread('XCBT_C_FUT_110110.TXT')
 DATA
 
 ```
-Notice the difference in the way the object, `DATA`, displays as a data.table in the first case and a data.frame in the second case. The data.table package was written with careful memory management in mind. Since we are working with large files, memory management is essential. Read the excellent series of vinettes for the [data.table package](https://cran.r-project.org/web/packages/data.table/index.html) for details about how data.table makes efficient use of memory verses data.frames. 
-
-To clean up our memory after that example, remove the `DATA` variable and load it again as a data.table.
+Notice the difference in the way the object, `DATA`, displays as a data.table in the first case and a data.frame in the second case. To clean up our memory after that example, remove the `DATA` variable and load it again as a data.table.
 
 ```
 rm(DATA)
@@ -174,7 +176,7 @@ names(DATA)
 
 **TradeSeqNum**
 
-`TradeSeqNum` is simply a running index of the trades and quotes as they occur in sequence. For some reason, this variable always increments by 10. Prior to 2012, CME had the practice of copying both the bid and ask when one changes. For example, if someone cancels a limit order to sell, the ask line will change. The quantity offered goes down by the order size that was canceled and the ask price may go up if it was the only limit order to sell at the top of the book. So in the BBO dataset a new ask must be recorded for the top of the book and the `TradeSeqNum` is incremented by 10. In addition, the best bid information is simply copied with the new `TradeSeqNum`. This makes building the top-of-the-book easy for data prior to 2012. An example of building the top-of-the-book will follow shortly.
+`TradeSeqNum` is simply a running index of the trades and quotes as they occur in sequence. For some reason, this variable always increments by 10. Prior to 2012, CME had the practice of copying both the bid and ask when one changes. For example, if someone cancels a limit order to sell, the ask line will change. The quantity offered goes down by the order size that was canceled and the ask price may go up if it was the only limit order to sell at the top of the book. So in the BBO dataset a new ask must be recorded for the top of the book and the `TradeSeqNum` is incremented by 10. In addition, the best bid information is simply copied with the new `TradeSeqNum`. This makes building the top-of-the-book easy for data prior to 2012. Beginning in 2012, the data no longer contian the bid or ask that was unchanged, they only record the bid if the best bid was revised and the only record the ask if the best ask was revised. Also, `TradeSeqNum` no longer increments by 10. An example of building the top-of-the-book for both the pre-2012 and post-2012 case follows in the [Useful Scripts][] section.
 
 **DeliveryDate** 
 
@@ -204,15 +206,10 @@ For the grains and oilseeds futures contracts prices are quoted in 1/4 of a cent
 
 The function `decimalprices()` takes the column `TrPrice` and converts the character string to a floating decimal price and automatically handles the fraction of a cent issue from the first column. 
 
-In the example below, we load the sample BBO data into a list called `accum` twice, similar to how we might bind multiple days of data together. From a memory use perspective it is good to get used to storing intermediate data in lists and then binding them together in the end. For more discussion of memory use problems in R see the excellent post at [win-vector](http://www.win-vector.com/blog/2015/07/efficient-accumulation-in-r/). Then, the function `rbindlist()` from the `data.table` package binds the two elements of the list, `accum`, into one data.table called `corn_110110`. The next line, `corn_110110[, Price := decimalprices(corn_110110$TrPrice)]` exploits the `data.table` functionality of calling a function `decimalprices()` on a column of the data.table and creating a new column called `Price`. More efficient from a memory perspective would be to simply replace the `TrPrice` columns with decimal prices returned by `decimalprices()`. Then the line would be `corn_110110[, TrPrice := decimalprices(corn_110110$TrPrice)]` instead. 
 
 ```{r}
-accum <- as.list(NULL)
-accum[[1]] <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))
-accum[[2]] <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))                 # accum is a list of two 'days' worth of BBO data
-corn_110110 <- data.table::rbindlist(accum)
-corn_110110[, Price := decimalprices(corn_110110$TrPrice)]
-corn_110110
+DATA[, Price := decimalprices(DATA$TrPrice)]
+DATA
 
 ```
 
@@ -224,8 +221,8 @@ A common task is to string together a series of 'nearby' or 'first deferred' con
 
 ```{r}
 accum <- as.list(NULL)
-accum[[1]] <- corn_110110
-accum[[2]] <- corn_110110                 # accum is a list of two 'days' worth of BBO data
+accum[[1]] <- DATA
+accum[[2]] <- DATA                 # accum is a list of two 'days' worth of BBO data
 accum <- RollContracts(accum, r = 20)
 accum
 
@@ -239,32 +236,48 @@ accum
 Sometimes you want to isolate market effects at specific times of the day. Often, the market open and market close are of particular interest. The function `minutebins(x , minutes)` takes a `data.table` object and the size of the minute bins, `minutes = 10` is the default. It takes the timestamp and rounds to the nearest minute interval allowing you to easily focus on market activity that happens exclusively in specific time minute intervals. For example, suppose you want to analyze the bid-ask spread on the market open. This function easily allows you to subset for a number of minutes directly after the market open. This is accomplished without much computing time because we manipulate the date and time character strings without converting to a date class. Converting to a date class alone takes a lot of time for R to accomplish, so if you can do subset by date or time without converting to a date class, you save a lot of time. 
 
 ```{r}
-corn_110110[, bins := minutebins(corn_110110, 10)]
-corn_110110
+DATA[, bins := minutebins(DATA, 10)]
+DATA
 
 ```
 
-### `datemanip()` and`timemanip()` for Converting to IDate Class Objects. 
+### `datemanip()` and `timemanip()` for Converting to IDate Class Objects. 
 
 As mentioned in the discussion of the `minutebins()` function, converting the date and time variables is costly in terms of computing time; however it is often unavoidable at some point in our analysis. Particularly if you want to include any plots of time series analysis, you need the x-axis to be specified as a variable in one of the time classes. From a computing time perspective, this is best to be done after your analysis is performed and you want to plot some kind of aggregated results. For example, perhaps I want to plot the number of transactions per day. You can first compute the number of transactions per day before converting the date variable to a date object. Now you have something that has only one observation per day. This will be less time consuming to convert to a date object. 
 
 ```{r}
 
-corn_110110[, c("TradeDate", "TradeTime") := .(datemanip(TradeDate), timemanip(TradeTime))]
-corn_110110
+DATA[, c("TradeDate", "TradeTime") := .(datemanip(TradeDate), timemanip(TradeTime))]
+DATA
 
 ```
 
 [Table of Contents][]
 
-## Build Top-of-the-Book and Bid-Ask Spread
+## Useful Scripts
 
-A frequent topic of analysis with the BBO data is to 
+In this section we will discuss some tasks that are commonly required for analysis on BBO data including building the top-of-the-book and computing the bid-ask-spread (BAS), looping over daily data files to build a large `data.table` object with many days worth of data, creating a summary plot with price, number of revisions to the bids, revisions to asks, and transactions. 
 
-```{r}
-DT <- dcast.data.table(corn_110110[ ASKBID != 'NA'  ], 
-                       TradeDate + TradeTime + TradeSeqNum + DeliveryDate + EntryDate ~ ASKBID, 
-                       value.var = c("TrQuantity", "TrPrice"))
+### Build Top-of-the-Book and Bid-Ask Spread
 
+A frequent topic of analysis with the BBO data is to examine the bid-ask-spread. The following code creates the BAS by using the `dcast.data.table()` function from the `data.table` package. This function allows you to take the `ASKBID` column and create a new column for each factor that exists in the `ASKBID` column. Note that we subseted the data table so that we exluded transactions by passing `DATA[ ASKBID != 'NA'  ]` to `dcast.data.table()`. 
+
+```{r, warning= FALSE, message = FALSE}
+library(ggplot2)
+DT <- dcast.data.table(DATA[ ASKBID != 'NA'  ], 
+                       TradeDate + TradeTime + TradeSeqNum + DeliveryDate + EntryDate + bins ~ ASKBID, 
+                       value.var = c("TrQuantity", "Price"))
+
+DT[, BAS := (Price_A - Price_B)]
+DT
+
+BAS_plot <- qplot(DT[DeliveryDate == 1103, as.POSIXct("2011-01-10") + TradeTime], DT[DeliveryDate == 1103, BAS],
+                  ylim = c(-0.25, 2), xlab = NULL, ylab = "BAS")
+
+BAS_plot
 ```
+
+We can see that on this day, January 10th, 2011, the BAS ranged from 0 to 1 cent and spent most of its time at 0.25 cents, which is one tick (minimum allowable price fluctuation) in this market. 
+
+This script works for building the top-of-the book prior to 2012, but in 2012 the CME Group changed the format of the BBO data so hat it does not record the bid and ask that is unchanged. 
 
