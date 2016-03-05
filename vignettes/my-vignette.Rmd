@@ -127,6 +127,7 @@ Next, make sure you have installed and loaded the `data.table` and `readr` packa
 #install.packages("readr")
 library(data.table)
 library(readr)
+library(tidyr)
 library(BBOTools)
 
 ```
@@ -260,12 +261,11 @@ In this section we will discuss some tasks that are commonly required for analys
 
 ### Build Top-of-the-Book and Bid-Ask Spread
 
-A frequent topic of analysis with the BBO data is to examine the bid-ask-spread. The following code creates the BAS by using the `dcast.data.table()` function from the `data.table` package. This function allows you to take the `ASKBID` column and create a new column for each factor that exists in the `ASKBID` column. Note that we subseted the data table so that we exluded transactions by passing `DATA[ ASKBID != 'NA'  ]` to `dcast.data.table()`. 
+A frequent topic of analysis with the BBO data is to examine the bid-ask-spread. The following code creates the BAS by using the `dcast.data.table()` function from the `data.table` package. This function allows you to take the `ASKBID` column and create a new column for each factor that exists in the `ASKBID` column.  
 
 ```{r, warning= FALSE, message = FALSE}
 library(ggplot2)
-DT <- dcast.data.table(DATA[ ASKBID != 'NA'  ], 
-                       TradeDate + TradeTime + TradeSeqNum + DeliveryDate + EntryDate + bins ~ ASKBID, 
+DT <- dcast.data.table(DATA, TradeDate + TradeTime + TradeSeqNum + DeliveryDate + EntryDate + bins ~ ASKBID, 
                        value.var = c("TrQuantity", "Price"))
 
 DT[, BAS := (Price_A - Price_B)]
@@ -279,5 +279,50 @@ BAS_plot
 
 We can see that on this day, January 10th, 2011, the BAS ranged from 0 to 1 cent and spent most of its time at 0.25 cents, which is one tick (minimum allowable price fluctuation) in this market. 
 
-This script works for building the top-of-the book prior to 2012, but in 2012 the CME Group changed the format of the BBO data so hat it does not record the bid and ask that is unchanged. 
+This script works for building the top-of-the book prior to 2012, but in 2012 the CME Group changed the format of the BBO data so that it does not record the bid and ask that is unchanged. Let us see what the `DT` looks like if we try to build the top-of-the-book for dates after 2012. Note that you can only follow along with this portion of the vinette if you have access to the proprietary data from CME's Historical Datamine. First load one of the datasets using the `DATA <- as.data.table(bboread('filepath'))` command from earlier in the vinette. For this example I am reading the large dataset in with `readr`'s `read_fwf()` function so I can specify `nmax = 500000` and have a less memory intensive example. Then, similar code is executed as what we did earlier. Notice that now there are many missing values, `NA`, after we cast the data.table. 
+
+The `fill()` function from the `tidyr` package takes missing values and fills in the previous value. Since an unchanged bid or ask is what produces the `NA`'s this is exactly what we need to do to build the top of the book. Then we can compute the BAS is a similar way as we did before. 
+ 
+
+```{r}
+
+rm(DATA)
+start <- c(1, 9, 15, 28, 32, 45, 53, 65)
+end   <- c(8, 14, 22, 31, 36, 51, 53, 70)
+  
+DATA <- readr::read_fwf('C:/Users/mallorym/BBOCORNDATA/2012Jan-2013Nov_txt/BBO_CBT_20120102-20131130_9552_00.TXT', 
+                         readr::fwf_positions(start, end, col_names = c("TradeDate", "TradeTime", "TradeSeqNum",
+                                                                            "DeliveryDate", "TrQuantity", "TrPrice",
+                                                                            "ASKBID", "EntryDate")),
+                          col_types = readr::cols(
+                            TradeDate = readr::col_character(),
+                            TradeTime = readr::col_character(),
+                            TradeSeqNum = readr::col_integer(),
+                            DeliveryDate = readr::col_character(),
+                            TrQuantity = readr::col_integer(),
+                            TrPrice = readr::col_character(),
+                            ASKBID = readr::col_character(),
+                            EntryDate = readr::col_character()
+                            ## Put this back into function bboread
+
+                          ), n_max = 500000, progress=FALSE)
+DATA <- as.data.table(DATA) 
+DATA[, Price := decimalprices(DATA$TrPrice)]
+DATA[, bins := minutebins(DATA, 10)]
+
+DT <- dcast.data.table(DATA[ ASKBID != 'NA'  ], 
+                       TradeDate + TradeTime + TradeSeqNum + DeliveryDate + EntryDate + bins ~ ASKBID, 
+                       value.var = c("TrQuantity", "Price"))
+rm(DATA)
+# data.table syntax does not work properly. tidyr functions must not be callable by data.table objects for some reason
+# DT[, c("TrQuantity_A", "TrQuantity_B", "Price_A", "Price_B") := .(fill(TrQuantity_A), fill(TqQuantity_B), fill(Price_A), fill(Price_B))]
+
+# The following is making copies of DT in memory, but I don't know of a solution right now. 
+DT <- fill(DT, TrQuantity_A:Price_B)
+DT[, BAS := (Price_A - Price_B)]
+DT
+```
+
+Get trade direction
+
 
