@@ -320,9 +320,26 @@ rm(DATA)
 # The following is making copies of DT in memory, but I don't know of a solution right now. 
 DT <- fill(DT, TrQuantity_A:Price_B, -TrQuantity_NA)
 DT[, BAS := (Price_A - Price_B)]
-tqdata <- DT[!is.na(Price_NA) , c("diff1", "diff2") := .(diff(Price_NA, lag = 1), diff(Price_NA, lag = 2))]
 ```
 
-Get trade direction
+### Get Trade Direction
+
+```{r}
+# rm(DATA) # Start fresh
+# rm(DT)
+DATA   <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))
+DATA[, Price := decimalprices(DATA$TrPrice)]
+DATA[, bins := minutebins(DATA, 10)]
+DT     <- dcast.data.table(DATA, TradeDate + TradeTime + TradeSeqNum + DeliveryDate + EntryDate + bins ~ ASKBID, 
+                       value.var = c("TrQuantity", "Price"))
+DT <- fill(DT, TrQuantity_A:Price_B, -TrQuantity_NA)
+DT[, BAS := (Price_A - Price_B)]
+tqdata <- DT[!is.na(Price_NA)  ]
+tqdata <- tqdata[, c("diff1", "diff2") := .(diff(Price_NA, lag = 1), diff(Price_NA, lag = 2))]
+tqdata[, td := getTD(tqdata)]
+tqdata
+```
+
+
 
 

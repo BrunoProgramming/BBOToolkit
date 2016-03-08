@@ -1,3 +1,25 @@
+#' Get Trade Direction
+#'
+#' This function assigns each transaction with a +1 for market orders to buy and -1 for market orders to sell
+#' according to the Lee and Ready (1991) algorithm. Implementation of this algorithm is the same as the
+#' `getTradeDirection()` function in the `highfrequency` package.
+#'
+#' @param tqdata A data.table that contains bids, asks, and transaction prices. BBO data has been subsetted so
+#' only transactions are in the tqdata data.table
+#'
+#' @return tqdata A data.table with a new column that has +1 for transactions identified as market orders to
+#' buy and -1 for transaction identified as market orders to sell.
+#'
+#' @examples
+#' DATA   <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))
+#' DT     <- dcast.data.table(DATA, TradeDate + TradeTime + TradeSeqNum + DeliveryDate + EntryDate + bins ~ ASKBID,
+#'                            value.var = c("TrQuantity", "Price"))
+#' DT[, BAS := (Price_A - Price_B)]
+#' tqdata <- DT[!is.na(Price_NA)  ]
+#' tqdata <- tqdata[, c("diff1", "diff2") := .(diff(Price_NA, lag = 1), diff(Price_NA, lag = 2))]
+#' tqdata[, td := getTD(tqdata)]
+#' tqdata
+#'
 
 
 
