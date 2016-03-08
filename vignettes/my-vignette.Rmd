@@ -11,6 +11,7 @@ vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: vinette.bib
 ---
 
 ## Table of Contents 
@@ -323,6 +324,8 @@ DT[, BAS := (Price_A - Price_B)]
 ```
 
 ### Get Trade Direction
+
+For many microsturcture models, you need to know the trade direction of each transaction. That is, whether a transaction was buyer initiated or seller initiated. The simplest case is that if you observe a transaction that occurs with a price exactly equal to the ask, you assume it was initated by a market order to buy, and if you observe a transaction that occurs with a price exactly equal to the bit, you assume it was initated by a market order to sell. Sometimes when the spread is wider than one tick, you observe trades that occur inside the spread and the data gives no indication about how the transaction inside the spread came about. Was is two market orders that god matched and given a random price inside the spread? Are the transactions and quote revisions not 100% in order? It is impossible to tell. But this issue comes up frequently enough that there are several algorithms whose job it is to sign a trade direction to each transaction. 
 
 ```{r}
 # rm(DATA) # Start fresh
