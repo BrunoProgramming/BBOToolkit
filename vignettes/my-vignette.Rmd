@@ -2,17 +2,20 @@
 title: "Introduction to BBOTools"
 author: "Mindy Mallory"
 date: "`r Sys.Date()`"
-output: 
-    rmarkdown::html_document:
-        theme: spacelab
-        highlight: pygments
-        css: css/bootstrap.css
+output: rmarkdown::pdf_document
+    
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: vinette.bib
+bibliography: vignette.bib
 ---
+
+<!-- rmarkdown::html_document:
+        theme: spacelab
+        highlight: pygments
+        css: css/bootstrap.css
+        -->
 
 ## Table of Contents 
 [Set Up Your First Project][]  
@@ -29,7 +32,7 @@ bibliography: vinette.bib
 
 ## Introduction 
 
-This vignette is written with graduate students in mind. The intent is to get graduate students and other collaborators who may not be familiar with data analysis with R and RStudio up and running doing basic analysis of the BBO datasets in as little time as possible. This vinette covers the basics of how to use R, RStudio, and the `BBOTools` package to analyse the CME's BBO datasets. First download and install R from [https://www.r-project.org/](https://www.r-project.org/), then download and install RStudio from [https://www.rstudio.com/](https://www.rstudio.com/). Before continuing, it is expected the reader will have completed an extensive introductory R tutorial. There are several available.  
+This vignette is written with graduate students in mind. The intent is to get graduate students and other collaborators who may not be familiar with data analysis with R and RStudio up and running doing basic analysis of the BBO datasets in as little time as possible. This vignette covers the basics of how to use R, RStudio, and the `BBOTools` package to analyse the CME's BBO datasets. First download and install R from [https://www.r-project.org/](https://www.r-project.org/), then download and install RStudio from [https://www.rstudio.com/](https://www.rstudio.com/). Before continuing, it is expected the reader will have completed an extensive introductory R tutorial. There are several available.  
 
 1. [http://www.r-tutor.com/r-introduction](http://www.r-tutor.com/r-introduction)
 
@@ -39,7 +42,7 @@ This vignette is written with graduate students in mind. The intent is to get gr
 
 4. [http://tryr.codeschool.com/](http://tryr.codeschool.com/)
 
-There are other others, but this is a start. For one's own research it is required that you will go much deeper than what is covered in these introductory tutorials, but hopefully you will come out of the tutorials with an ability to Google what you want to do and how to implement it in R. This package makes heavy use of the `data.table` package. The `data.table` package was written with careful memory management in mind. Since we are working with large files, memory management is essential. Read the excellent series of vinettes for the [data.table package](https://cran.r-project.org/web/packages/data.table/index.html) for details about how `data.table` makes efficient use of memory verses data.frames. The rest of this vinette will assume the reader has at least installed the latest version of R and RStudio. IF you are familar with R and RStudio, skip ahead to [The BBOTools Package][]. 
+There are other others, but this is a start. For one's own research it is required that you will go much deeper than what is covered in these introductory tutorials, but hopefully you will come out of the tutorials with an ability to Google what you want to do and how to implement it in R. This package makes heavy use of the `data.table` package. The `data.table` package was written with careful memory management in mind. Since we are working with large files, memory management is essential. Read the excellent series of vignettes for the [data.table package](https://cran.r-project.org/web/packages/data.table/index.html) for details about how `data.table` makes efficient use of memory verses data.frames. The rest of this vignette will assume the reader has at least installed the latest version of R and RStudio. IF you are familiar with R and RStudio, skip ahead to [The BBOTools Package][]. 
 
 [Table of Contents][]
 
@@ -49,7 +52,7 @@ In Rstudio, click "New Project" from the File menu. You will see a menu like the
 
 ![New Project](images/newproj.png)
 
-Choose "New Directory", and then "Empty Project". You will be asked to navigate to the place where you want your project folder to reside. This creates a file in the directory you chose named `YourProject.Rproj`. Assuming you named your project 'YourProject'. This should be the first step on any analysis in R. Working within the framework of an R Project tells RStudio where to put things by default. Without it, the default working directory will inevitably end up being something unintuitive or unexpected, and you will have to tell your R code hard file paths everytime you want to refer to a data file or code script. This makes working accross machines or with collaborators difficult because you have to change the file path everytime you are on a different machine. 
+Choose "New Directory", and then "Empty Project". You will be asked to navigate to the place where you want your project folder to reside. This creates a file in the directory you chose named `YourProject.Rproj`. Assuming you named your project 'YourProject'. This should be the first step on any analysis in R. Working within the framework of an R Project tells RStudio where to put things by default. Without it, the default working directory will inevitably end up being something unintuitive or unexpected, and you will have to tell your R code hard file paths every time you want to refer to a data file or code script. This makes working across machines or with collaborators difficult because you have to change the file path every time you are on a different machine. 
 
 [Table of Contents][]
 
@@ -59,7 +62,7 @@ Open a new R script file by clicking the green '+' icon below the File menu in R
 
 ![New Script](images/newscript.png)
 
-Follow along by copy and pasting the commands from this vinette into your R script and executing the commands. To execute a command, place the cursor on the line you want to execute and click "Run". In the figure below, executing line 2 will assign a value of '1' to 'x'. 
+Follow along by copy and pasting the commands from this vignette into your R script and executing the commands. To execute a command, place the cursor on the line you want to execute and click "Run". In the figure below, executing line 2 will assign a value of '1' to 'x'. 
 
 ![Execute command](images/execute.png)
 
@@ -69,7 +72,7 @@ Follow along by copy and pasting the commands from this vinette into your R scri
 
 This package provides tools for working with the Top-of-the-Book (Best Bid-Offer) datasets from the CME Group's [Historical Datamine](http://www.cmegroup.com/market-data/datamine-historical-data.html#topOfBookBbo). These data provide record of every revision to the best bid or best offer. These revisions may have resulted from a new limit order arriving to the market, a limit order being cancelled, or a transaction matching a market order with a limit order or a limit order with another limit order. 
 
-The raw data provided by the CME Group are organized as large fixed-width files. The files are large enough that if one is not careful about memory use, even simple analyses becomes a problem. An extention of R's base data.frame called [data.table](https://github.com/Rdatatable/data.table/wiki) was recently developed by [Matt Dowle](https://github.com/mattdowle) and [Arun Srinivasan](https://github.com/arunsrinivasan) makes working with large datasets in R much more feasible. 
+The raw data provided by the CME Group are organized as large fixed-width files. The files are large enough that if one is not careful about memory use, even simple analyses becomes a problem. An extension of R's base data.frame called [data.table](https://github.com/Rdatatable/data.table/wiki) was recently developed by [Matt Dowle](https://github.com/mattdowle) and [Arun Srinivasan](https://github.com/arunsrinivasan) makes working with large datasets in R much more feasible. 
 
 This package utilizes the data.table package extensively. Most of the functions in the BBOTools package are simple wrapper functions that make working with the BBO data more convenient. 
 
@@ -77,7 +80,7 @@ This package utilizes the data.table package extensively. Most of the functions 
 
 ## BBOTools as a Private GitHub Repository
 
-Currently, BBOTools is hosted in a private repository in the [ProfMalloryResearch](https://github.com/ProfMalloryResearch) GitHub repsository. To use this package you will need to have a GitHub account and be added to the [ProfMalloryResearch](https://github.com/ProfMalloryResearch) organization. If we plan to collaborate, contact Mindy Mallory to be added.  
+Currently, BBOTools is hosted in a private repository in the [ProfMalloryResearch](https://github.com/ProfMalloryResearch) GitHub repository. To use this package you will need to have a GitHub account and be added to the [ProfMalloryResearch](https://github.com/ProfMalloryResearch) organization. If we plan to collaborate, contact Mindy Mallory to be added.  
 
 Even after being added to the organization you will still need to generate a personal access token from GitHub in order to authenticate and install packages from this private organization. Further, you will want to save it in such a way that it will not be publicly visible anywhere but on your local machine.  
 
@@ -155,7 +158,7 @@ DATA <- as.data.table(bboread('XCBT_C_FUT_110110.TXT'))
 DATA
 
 ```
-Click on the `DATA` variable in the 'Environment' tab in RStudio. This displays the data.table object in a spreadsheet-like display. The `bboread()` function only imported the data columns we need for analyzing this data. The raw data contains many additional columns that are unnecesary for our purposes. If you want to see the full dataset, look at the documentation for using the `read_fwf()` function of the [readr](https://cran.r-project.org/web/packages/readr/index.html) package. 
+Click on the `DATA` variable in the 'Environment' tab in RStudio. This displays the data.table object in a spreadsheet-like display. The `bboread()` function only imported the data columns we need for analyzing this data. The raw data contains many additional columns that are unnecessary for our purposes. If you want to see the full dataset, look at the documentation for using the `read_fwf()` function of the [readr](https://cran.r-project.org/web/packages/readr/index.html) package. 
 
 We have imported the following data columns:
 
@@ -178,7 +181,7 @@ names(DATA)
 
 **TradeSeqNum**
 
-`TradeSeqNum` is simply a running index of the trades and quotes as they occur in sequence. For some reason, this variable always increments by 10. Prior to 2012, CME had the practice of copying both the bid and ask when one changes. For example, if someone cancels a limit order to sell, the ask line will change. The quantity offered goes down by the order size that was canceled and the ask price may go up if it was the only limit order to sell at the top of the book. So in the BBO dataset a new ask must be recorded for the top of the book and the `TradeSeqNum` is incremented by 10. In addition, the best bid information is simply copied with the new `TradeSeqNum`. This makes building the top-of-the-book easy for data prior to 2012. Beginning in 2012, the data no longer contian the bid or ask that was unchanged, they only record the bid if the best bid was revised and the only record the ask if the best ask was revised. Also, `TradeSeqNum` no longer increments by 10. An example of building the top-of-the-book for both the pre-2012 and post-2012 case follows in the [Useful Scripts][] section.
+`TradeSeqNum` is simply a running index of the trades and quotes as they occur in sequence. For some reason, this variable always increments by 10. Prior to 2012, CME had the practice of copying both the bid and ask when one changes. For example, if someone cancels a limit order to sell, the ask line will change. The quantity offered goes down by the order size that was canceled and the ask price may go up if it was the only limit order to sell at the top of the book. So in the BBO dataset a new ask must be recorded for the top of the book and the `TradeSeqNum` is incremented by 10. In addition, the best bid information is simply copied with the new `TradeSeqNum`. This makes building the top-of-the-book easy for data prior to 2012. Beginning in 2012, the data no longer contain the bid or ask that was unchanged, they only record the bid if the best bid was revised and the only record the ask if the best ask was revised. Also, `TradeSeqNum` no longer increments by 10. An example of building the top-of-the-book for both the pre-2012 and post-2012 case follows in the [Useful Scripts][] section.
 
 **DeliveryDate** 
 
@@ -190,7 +193,7 @@ This variable contains the size of the bid, ask, or transaction.
 
 **TrPrice**
 
-This variable contains the price of the bid, ask, or transaction. This variable is a character string with leading zeros before displaying the price in cents per bushel. A quirk of these markets is that prices are quoted to the eighth of a cent and the last character of this price variable represents the fraction of an eighth of a cent. For example a price of `0005956` represents `595 + 6/8 = 595.75` cents per bushel. This package contains a function called `decimalprices()` that converts this variable to a decimal for you. An example will follow in this vinette. 
+This variable contains the price of the bid, ask, or transaction. This variable is a character string with leading zeros before displaying the price in cents per bushel. A quirk of these markets is that prices are quoted to the eighth of a cent and the last character of this price variable represents the fraction of an eighth of a cent. For example a price of `0005956` represents `595 + 6/8 = 595.75` cents per bushel. This package contains a function called `decimalprices()` that converts this variable to a decimal for you. An example will follow in this vignette. 
 
 **ASKBID**
 
@@ -204,7 +207,7 @@ This section provides detailed examples of how to execute tasks common to the an
 
 ### `decimalprices()`: Converting 1/8th of a cent 'Ticks' to Decimal 
 
-For the grains and oilseeds futures contracts prices are quoted in 1/4 of a cent increments and the last character of the `TrPrice` variable is the numerator in of the fraction expressed as 1/8th of a cent. For example, the only numbers that apper as last character in the `TrPrice` column are 0, 2, 4, and 6 representing 0/8 = 0.00, 2/8 = 0.25, 4/8 = 0.5, and 6/8 = 0.75. 
+For the grains and oilseeds futures contracts prices are quoted in 1/4 of a cent increments and the last character of the `TrPrice` variable is the numerator in of the fraction expressed as 1/8th of a cent. For example, the only numbers that appear as last character in the `TrPrice` column are 0, 2, 4, and 6 representing 0/8 = 0.00, 2/8 = 0.25, 4/8 = 0.5, and 6/8 = 0.75. 
 
 The function `decimalprices()` takes the column `TrPrice` and converts the character string to a floating decimal price and automatically handles the fraction of a cent issue from the first column. 
 
@@ -219,7 +222,11 @@ DATA
 
 ### `RollContracts()`: Rolling Contracts to Create a Nearby Series
 
-A common task is to string together a series of 'nearby' or 'first deferred' contracts. In this package the function `RollContracts(accum, r)` takes a `data.table` object or a list of `data.table` objects for different dates and identifies which contracts are the nearby, first deferred, and second deferred. More distan contracts than these are removed. The value `r` can be set to specify the date of the month prior to expiration on which the roll should occur. The 20th is the default. A new column called `Deferreds` is created, allowing the nearby contract across multiple days to be strung together to form a nearby series. 
+A common task is to string together a series of 'nearby' or 'first deferred' contracts. In this package the function `RollContracts(accum, r)` takes a list of `data.table` objects for different dates and identifies which contracts are the nearby, first deferred, and second deferred. More distant contracts than these are removed. The value `r` can be set to specify the date of the month prior to expiration on which the roll should occur. The 20th is the default. A new column called `Deferreds` is created, allowing the nearby contract across multiple days to be strung together to form a nearby series. 
+
+If you are working with data prior to 2012, it is natural and best to load each day's data into elements of a list because they distribute every day's worth of data as separate text files. So for data prior to 2012, supplying the `RollContracts()` function with a list of data.table objects will be natural. 
+
+Starting in 2012, they changed the format of how they report quote revisions and also they deliver a few months worth of data in one data file. In this case because of system memory limitations you will want only load one file at a time. If you need to identify a nearby and/or deferred contracts, place the data of this one file as a single element in a list so that you can pass it to the function `RollContracts()`. `RollContracts()` does several data munging processes via calls to the `lapply()` function. Some of these actions can be completed as `data.table` actions on the *j* column, but some of them could not so supplying the data as a list is required for the `RollContracts()` function. 
 
 ```{r}
 accum <- as.list(NULL)
@@ -254,6 +261,10 @@ DATA
 
 ```
 
+### `getTD()` Assigning Trade Direction to Transactions
+
+This function assigns each transaction as buyer initiated (+1) or seller initiated (-1). Since we need to have built the top-of-the-book and observe the bid-ask-spread for the function, a detailed example of `getTD()`'s implementation follows after we build the top-of-the-book below. 
+
 [Table of Contents][]
 
 ## Useful Scripts
@@ -280,7 +291,7 @@ BAS_plot
 
 We can see that on this day, January 10th, 2011, the BAS ranged from 0 to 1 cent and spent most of its time at 0.25 cents, which is one tick (minimum allowable price fluctuation) in this market. 
 
-This script works for building the top-of-the book prior to 2012, but in 2012 the CME Group changed the format of the BBO data so that it does not record the bid and ask that is unchanged. Let us see what the `DT` looks like if we try to build the top-of-the-book for dates after 2012. Note that you can only follow along with this portion of the vinette if you have access to the proprietary data from CME's Historical Datamine. First load one of the datasets using the `DATA <- as.data.table(bboread('filepath'))` command from earlier in the vinette. For this example I am reading the large dataset in with `readr`'s `read_fwf()` function so I can specify `nmax = 500000` and have a less memory intensive example. Then, similar code is executed as what we did earlier. Notice that now there are many missing values, `NA`, after we cast the data.table. 
+This script works for building the top-of-the book prior to 2012, but in 2012 the CME Group changed the format of the BBO data so that it does not record the bid and ask that is unchanged. Let us see what the `DT` looks like if we try to build the top-of-the-book for dates after 2012. Note that you can only follow along with this portion of the vignette if you have access to the proprietary data from CME's Historical Datamine. First load one of the datasets using the `DATA <- as.data.table(bboread('filepath'))` command from earlier in the vignette. For this example I am reading the large dataset in with `readr`'s `read_fwf()` function so I can specify `nmax = 500000` and have a less memory intensive example. Then, similar code is executed as what we did earlier. Notice that now there are many missing values, `NA`, after we cast the data.table. 
 
 The `fill()` function from the `tidyr` package takes missing values and fills in the previous value. Since an unchanged bid or ask is what produces the `NA`'s this is exactly what we need to do to build the top of the book. Then we can compute the BAS is a similar way as we did before. 
  
@@ -325,7 +336,11 @@ DT[, BAS := (Price_A - Price_B)]
 
 ### Get Trade Direction
 
-For many microsturcture models, you need to know the trade direction of each transaction. That is, whether a transaction was buyer initiated or seller initiated. The simplest case is that if you observe a transaction that occurs with a price exactly equal to the ask, you assume it was initated by a market order to buy, and if you observe a transaction that occurs with a price exactly equal to the bit, you assume it was initated by a market order to sell. Sometimes when the spread is wider than one tick, you observe trades that occur inside the spread and the data gives no indication about how the transaction inside the spread came about. Was is two market orders that god matched and given a random price inside the spread? Are the transactions and quote revisions not 100% in order? It is impossible to tell. But this issue comes up frequently enough that there are several algorithms whose job it is to sign a trade direction to each transaction. 
+For many microsturcture models, you need to know the trade direction of each transaction. That is, whether a transaction was buyer initiated or seller initiated. The simplest case is that if you observe a transaction that occurs with a price exactly equal to the ask, you assume it was initiated by a market order to buy, and if you observe a transaction that occurs with a price exactly equal to the bid, you assume it was initiated by a market order to sell. Sometimes when the spread is wider than one tick, you observe trades that occur inside the spread and the data gives no indication about how the transaction inside the spread came about. Was is two market orders that god matched and given a random price inside the spread? Are the transactions and quote revisions not 100% in order? It is impossible to tell. But this issue comes up frequently enough that there are several algorithms whose job it is to sign a trade direction to each transaction. Lee and Ready [-@lee1991inferring] developed an early algorithm that is still widely used, although there have been criticisms of this algorithm [@panayides2014comparing], and other competing algorithms have been developed [@easley2016discerning].
+
+Currently, the function `getTD()` only supports signing trade directions according to the Lee and Ready algorithm, but I think the research would benefit from developing the program to implement some of the newer algorithms. Support for such will come sometime in the future. 
+
+Below is an example in our context of how to run the `getTD()` function to sign trades according to the Lee and Ready algorithm. 
 
 ```{r}
 # rm(DATA) # Start fresh
@@ -345,4 +360,4 @@ tqdata
 
 
 
-
+## References
