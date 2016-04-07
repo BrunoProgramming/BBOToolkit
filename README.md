@@ -28,5 +28,5 @@ You should see your own PAT in the output.
 
 Now to install the package `BBOToolkit` from [ProfMalloryResearch](https://github.com/ProfMalloryResearch) execute the following r code:
 
-`install_github("ProfMalloryResearch/BBOToolkit", auth_token = Sys.getenv("GITHUB_PAT")) `
+`install_github("ProfMalloryResearch/BBOToolkit") `
 
